@@ -3,9 +3,9 @@ const hre = require("hardhat");
 
 async function main() {
   // For Sepolia monitoring
-  const SEPOLIA_ENDPOINT_ADDRESS = "0x48F25D7b6e32FE889dd9F149E35928dA6550685a";
+  const SEPOLIA_ENDPOINT_ADDRESS = "0x7d5CFF0f4c455a917384ef68dE8C1475cF09D826";
   // For TAN monitoring  
-  const TAN_ENDPOINT_ADDRESS = "0x4d8563C956Bb6BfCA42D8f205aA6f97512b15928";
+  const TAN_ENDPOINT_ADDRESS = "0x2F94C02ff226b54dA3cBf06D1e0893eE12e42773";
   
   // Use the appropriate endpoint based on network
   const networkName = hre.network.name;

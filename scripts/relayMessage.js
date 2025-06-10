@@ -1,9 +1,9 @@
 const hre = require("hardhat");
 
 async function main() {
-  const ENDPOINT_ADDRESS_TAN = "0x4d8563C956Bb6BfCA42D8f205aA6f97512b15928"; // Updated TAN endpoint address
-  const RECEIVER_ADDRESS_TAN = "0xD41012316E5ce1A7C5cbF561F4974C4C818b25FC";
-  const SENDER_ADDRESS_SEPOLIA = "0xB03057918a4232AD53aEc3E03F7ea2d1cBF3dc1d";
+  const ENDPOINT_ADDRESS_TAN = "0x2F94C02ff226b54dA3cBf06D1e0893eE12e42773"; // Updated TAN endpoint address
+  const RECEIVER_ADDRESS_TAN = "0x7776EeA65F1D389B61435269c0834a7fC725c425";
+  const SENDER_ADDRESS_SEPOLIA = "0x4d4676E33D55E630709fbC54e7869F8462cB09aC";
   
   const message = "Hello TAN from Sepolia! 🌉";
   const payload = hre.ethers.utils.defaultAbiCoder.encode(["string"], [message]);

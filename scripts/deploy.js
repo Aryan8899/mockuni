@@ -30,7 +30,7 @@ async function main() {
     
   } else if (networkName === "sepolia") {
     // Update this with actual receiver address from TAN deployment
-    const RECEIVER_ADDRESS_TAN = "0xD41012316E5ce1A7C5cbF561F4974C4C818b25FC";
+    const RECEIVER_ADDRESS_TAN = "0x7776EeA65F1D389B61435269c0834a7fC725c425";
     
     // 3. Deploy SenderContract on Sepolia
     const Sender = await hre.ethers.getContractFactory("SenderContract");

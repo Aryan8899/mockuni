@@ -2,14 +2,14 @@
 pragma solidity ^0.8.0;
 
 interface IReceiver {
-    function lzReceive(uint16 srcChainId, bytes calldata srcAddress, bytes calldata payload) external;
+    function lzReceive(uint256 srcChainId, bytes calldata srcAddress, bytes calldata payload) external;
 }
 
 contract CustomEndpoint {
-    event MessageQueued(uint16 dstChainId, address dstAddress, bytes payload, address sender);
-    event MessageDelivered(uint16 srcChainId, address srcAddress, address dstContract, bytes payload);
+    event MessageQueued(uint256 dstChainId, address dstAddress, bytes payload, address sender);
+    event MessageDelivered(uint256 srcChainId, address srcAddress, address dstContract, bytes payload);
     
-    mapping(uint16 => address) public remoteApps;
+    mapping(uint256 => address) public remoteApps;
     mapping(bytes32 => bool) public processedMessages;
     
     address public owner;
@@ -39,7 +39,7 @@ contract CustomEndpoint {
     }
 
     function send(
-        uint16 dstChainId,
+        uint256 dstChainId,
         address dstAddress,
         bytes calldata payload
     ) external payable {
@@ -48,7 +48,7 @@ contract CustomEndpoint {
     }
 
     function deliver(
-        uint16 srcChainId,
+        uint256 srcChainId,
         address srcAddress,
         address dstContract,
         bytes calldata payload,
@@ -61,7 +61,9 @@ contract CustomEndpoint {
         emit MessageDelivered(srcChainId, srcAddress, dstContract, payload);
     }
 
-    function setRemoteApp(uint16 _chainId, address _remoteApp) external onlyOwner {
+    function setRemoteApp(uint256 _chainId, address _remoteApp) external onlyOwner {
         remoteApps[_chainId] = _remoteApp;
     }
 }
+
+

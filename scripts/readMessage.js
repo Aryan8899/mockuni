@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 async function main() {
-  const RECEIVER_ADDRESS = "0xD41012316E5ce1A7C5cbF561F4974C4C818b25FC"; // Updated receiver address
+  const RECEIVER_ADDRESS = "0x7776EeA65F1D389B61435269c0834a7fC725c425"; // Updated receiver address
   
   const receiver = await hre.ethers.getContractAt("ReceiverContract", RECEIVER_ADDRESS);
 

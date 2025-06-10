@@ -2,8 +2,8 @@ const hre = require("hardhat");
 
 async function main() {
   // Configuration - Updated with new deployment addresses
-  const SENDER_ADDRESS = "0xB03057918a4232AD53aEc3E03F7ea2d1cBF3dc1d";
-  const RECEIVER_ADDRESS_TAN = "0xD41012316E5ce1A7C5cbF561F4974C4C818b25FC";
+  const SENDER_ADDRESS = "0x4d4676E33D55E630709fbC54e7869F8462cB09aC";
+  const RECEIVER_ADDRESS_TAN = "0x7776EeA65F1D389B61435269c0834a7fC725c425";
   const TAN_CHAIN_ID = 4442;
   
   const message = "Hello TAN from Sepolia! 🌉";
