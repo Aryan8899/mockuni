@@ -4,6 +4,7 @@ const hre = require("hardhat");
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
   console.log(`Deploying from: ${deployer.address}`);
+  console.log(`Balance: ${hre.ethers.utils.formatEther(await deployer.getBalance())} ETH`);
 
   const networkName = hre.network.name;
   console.log(`Network: ${networkName}`);
@@ -30,7 +31,7 @@ async function main() {
     
   } else if (networkName === "sepolia") {
     // Update this with actual receiver address from TAN deployment
-    const RECEIVER_ADDRESS_TAN = "0x7776EeA65F1D389B61435269c0834a7fC725c425";
+    const RECEIVER_ADDRESS_TAN = "0x084092Aea201384d46971502E481773348B5d0B8";
     
     // 3. Deploy SenderContract on Sepolia
     const Sender = await hre.ethers.getContractFactory("SenderContract");
@@ -38,8 +39,8 @@ async function main() {
     await sender.deployed();
     console.log(`SenderContract deployed to: ${sender.address}`);
 
-    // 4. Configure chain mappings
-    const TAN_CHAIN_ID = 4442; // Define your TAN chain ID
+    // 4. Configure chain mappings - Now using uint256
+    const TAN_CHAIN_ID = 4442;
     const setTx = await endpoint.setRemoteApp(TAN_CHAIN_ID, RECEIVER_ADDRESS_TAN);
     await setTx.wait();
     console.log(`Linked TAN chain (ID: ${TAN_CHAIN_ID}) to receiver: ${RECEIVER_ADDRESS_TAN}`);
@@ -49,6 +50,10 @@ async function main() {
     console.log(`- Endpoint: ${endpoint.address}`);
     console.log(`- Sender: ${sender.address}`);
     console.log(`- TAN Receiver: ${RECEIVER_ADDRESS_TAN}`);
+    
+    // Verify the remote app is set correctly
+    const remoteApp = await endpoint.remoteApps(TAN_CHAIN_ID);
+    console.log(`- Remote app verification: ${remoteApp}`);
   }
 }
 

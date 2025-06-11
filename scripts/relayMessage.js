@@ -1,40 +1,83 @@
 const hre = require("hardhat");
 
 async function main() {
-  const ENDPOINT_ADDRESS_TAN = "0x2F94C02ff226b54dA3cBf06D1e0893eE12e42773"; // Updated TAN endpoint address
-  const RECEIVER_ADDRESS_TAN = "0x7776EeA65F1D389B61435269c0834a7fC725c425";
-  const SENDER_ADDRESS_SEPOLIA = "0x4d4676E33D55E630709fbC54e7869F8462cB09aC";
+  const RECEIVER_ADDRESS_TAN = "0x084092Aea201384d46971502E481773348B5d0B8";
+  const SENDER_ADDRESS_SEPOLIA = "0x9e9cdbA0D0D542f8889C03a398CF118DDA7aAe40";
   
-  const message = "Hello TAN from Sepolia! 🌉";
-  const payload = hre.ethers.utils.defaultAbiCoder.encode(["string"], [message]);
+  console.log("🧪 Testing Receiver Contract Directly...");
   
-  // Generate message hash for replay protection
-  const messageHash = hre.ethers.utils.keccak256(
-    hre.ethers.utils.defaultAbiCoder.encode(
-      ["uint16", "address", "address", "bytes", "uint256"],
-      [11155111, SENDER_ADDRESS_SEPOLIA, RECEIVER_ADDRESS_TAN, payload, Date.now()]
-    )
-  );
-
-  const [relayer] = await hre.ethers.getSigners();
-  const endpoint = await hre.ethers.getContractAt("CustomEndpoint", ENDPOINT_ADDRESS_TAN);
-
-  console.log("🚀 Relaying message to TAN...");
+  // 1. Check if receiver exists
+  const code = await hre.ethers.provider.getCode(RECEIVER_ADDRESS_TAN);
+  if (code === '0x') {
+    console.log("❌ Receiver contract doesn't exist!");
+    return;
+  }
   
-  const tx = await endpoint.deliver(
-    11155111, // Sepolia chain ID
-    SENDER_ADDRESS_SEPOLIA,
-    RECEIVER_ADDRESS_TAN,
-    payload,
-    messageHash
-  );
-  const receipt = await tx.wait();
-
-  console.log("✅ Message delivered successfully!");
-  console.log(`Tx Hash: ${receipt.transactionHash}`);
+  try {
+    const receiver = await hre.ethers.getContractAt("ReceiverContract", RECEIVER_ADDRESS_TAN);
+    
+    // 2. Check current state
+    console.log("📖 Current receiver state:");
+    try {
+      const lastMessage = await receiver.lastMessage();
+      const lastSender = await receiver.lastSender();
+      const lastSrcChainId = await receiver.lastSrcChainId();
+      
+      console.log(`Last message: "${lastMessage}"`);
+      console.log(`Last sender: ${lastSender}`);
+      console.log(`Last source chain: ${lastSrcChainId}`);
+    } catch (e) {
+      console.log("Could not read current state:", e.message);
+    }
+    
+    // 3. Test lzReceive function directly
+    console.log("\n🧪 Testing lzReceive function...");
+    const message = "Test message from direct call";
+    const payload = hre.ethers.utils.defaultAbiCoder.encode(["string"], [message]);
+    const srcAddress = hre.ethers.utils.defaultAbiCoder.encode(["address"], [SENDER_ADDRESS_SEPOLIA]);
+    
+    try {
+      // First try static call
+      await receiver.callStatic.lzReceive(11155111, srcAddress, payload);
+      console.log("✅ Static call to lzReceive succeeded");
+      
+      // Now try actual transaction
+      const tx = await receiver.lzReceive(11155111, srcAddress, payload);
+      const receipt = await tx.wait();
+      
+      if (receipt.status === 1) {
+        console.log("✅ Direct lzReceive call succeeded!");
+        console.log(`Gas used: ${receipt.gasUsed.toString()}`);
+        
+        // Check updated state
+        const newMessage = await receiver.lastMessage();
+        console.log(`New message: "${newMessage}"`);
+        
+        if (newMessage === message) {
+          console.log("✅ Message was stored correctly!");
+        } else {
+          console.log("❌ Message was not stored correctly");
+        }
+      } else {
+        console.log("❌ Direct lzReceive transaction failed");
+      }
+      
+    } catch (error) {
+      console.log("❌ lzReceive failed:", error.message);
+      
+      // Check if it's an access control issue
+      if (error.message.includes("Not authorized") || error.message.includes("Ownable")) {
+        console.log("💡 This might be an access control issue in the receiver");
+        console.log("💡 The receiver might only allow the endpoint to call lzReceive");
+      }
+    }
+    
+  } catch (error) {
+    console.log("❌ Error interacting with receiver:", error.message);
+  }
 }
 
 main().catch((error) => {
-  console.error(error);
+  console.error("Script failed:", error);
   process.exitCode = 1;
 });

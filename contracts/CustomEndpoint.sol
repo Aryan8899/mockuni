@@ -43,8 +43,11 @@ contract CustomEndpoint {
         address dstAddress,
         bytes calldata payload
     ) external payable {
-        require(remoteApps[dstChainId] != address(0), "Remote app not set");
-        emit MessageQueued(dstChainId, dstAddress, payload, msg.sender);
+        // Use dstAddress if provided, otherwise use remoteApps mapping
+        address targetAddress = dstAddress != address(0) ? dstAddress : remoteApps[dstChainId];
+        require(targetAddress != address(0), "Remote app not set");
+        
+        emit MessageQueued(dstChainId, targetAddress, payload, msg.sender);
     }
 
     function deliver(
@@ -65,5 +68,3 @@ contract CustomEndpoint {
         remoteApps[_chainId] = _remoteApp;
     }
 }
-
-
